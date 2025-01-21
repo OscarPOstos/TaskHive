@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.http import JsonResponse
@@ -48,5 +48,16 @@ class RegisterView(View):
                 email=email
             )
             return JsonResponse({'message': 'Usuario registrado con éxito.'}, status=201)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+        
+class LogoutView(View):
+    def post(self, request):
+        try:
+            if request.user.is_authenticated:
+                logout(request)  # Cierra la sesión del usuario
+                return JsonResponse({'message': 'Sesión cerrada exitosamente.'}, status=200)
+            else:
+                return JsonResponse({'error': 'No estás autenticado.'}, status=401)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
